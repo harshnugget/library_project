@@ -1,8 +1,8 @@
 let myLibrary = [];
 
 class Book {
-    constructor(name, author, numberOfPages, hasBeenRead) {
-        this.name = name;
+    constructor(title, author, numberOfPages, hasBeenRead) {
+        this.title = title;
         this.author = author;
         this.numberOfPages = numberOfPages;
         this.hasBeenRead = hasBeenRead;
@@ -11,26 +11,28 @@ class Book {
 
 // Add button event listener
 document.querySelector("#add-book").addEventListener("click", e => {
-    const name = document.querySelector("#book-name");
+    const title = document.querySelector("#book-title");
     const author = document.querySelector("#book-author");
     const pages = document.querySelector("#book-pages");
     const hasBeenRead = document.querySelector("#book-read-status");
-    addBookToLibrary(name.value, author.value, pages.value, hasBeenRead.checked);
-    name.value = "";
+
+    addBookToLibrary(title.value, author.value, pages.value, hasBeenRead.checked);
+
+    title.value = "";
     author.value = "";
     pages.value = "";
     hasBeenRead.checked = false;
-})
+});
 
 // Add book to library array and table
-function addBookToLibrary(name, author, numberOfPages, hasBeenRead=false) {
-    if (!name || !author) {
+function addBookToLibrary(title, author, numberOfPages, hasBeenRead=false) {
+    if (!title || !author) {
         console.log("Invalid");
         return;
     }
     
     // Generate id of book
-    const id = generateBookId(name, author);
+    const id = generateBookId(title, author);
 
     // Check if book already exists
     for (let i = 0; i < myLibrary.length; i++) {
@@ -40,7 +42,7 @@ function addBookToLibrary(name, author, numberOfPages, hasBeenRead=false) {
         }
     }
 
-    const book = new Book(name, author, numberOfPages, hasBeenRead);
+    const book = new Book(title, author, numberOfPages, hasBeenRead);
     book.id = id;
 
     // Append book to library array
@@ -52,8 +54,8 @@ function addBookToLibrary(name, author, numberOfPages, hasBeenRead=false) {
     newRow.dataset.id = id;
 
     // Fill new row with book data
-    const nameCell = newRow.insertCell();
-    nameCell.textContent = name;
+    const titleCell = newRow.insertCell();
+    titleCell.textContent = title;
 
     const authorCell = newRow.insertCell();
     authorCell.textContent = author;
@@ -62,7 +64,8 @@ function addBookToLibrary(name, author, numberOfPages, hasBeenRead=false) {
     pagesCell.textContent = numberOfPages;
 
     const hasBeenReadCell = newRow.insertCell();
-    hasBeenReadCell.textContent = hasBeenRead === true ? "Yes" : "No";
+    hasBeenReadCell.appendChild(createSwitchElement(hasBeenRead));
+
 
     // Add a remove button to each row
     const deleteButtonCell = newRow.insertCell();
@@ -101,4 +104,35 @@ function generateBookId(book, author) {
         id |= 0; // Convert to 32bit integer
     }
   return id;
+}
+
+// Create a switch element
+function createSwitchElement(state=false) {
+    // Create a switch element
+    var switchLabel = document.createElement("label");
+    switchLabel.classtitle = "switch";
+
+    // Create an input element for checkbox
+    var checkboxInput = document.createElement("input");
+    checkboxInput.setAttribute("type", "checkbox");
+    checkboxInput.checked = state;
+
+    // Create a span element for slider
+    var sliderSpan = document.createElement("span");
+    sliderSpan.classtitle = "slider round";
+
+    // Append input and span to label
+    switchLabel.appendChild(checkboxInput);
+    switchLabel.appendChild(sliderSpan);
+
+    // Update read status on library object
+    switchLabel.addEventListener("click", e => {
+        for (let i = 0; i < myLibrary.length; i++) {
+            if (e.target.closest("tr").dataset.id == myLibrary[i].id) {
+                myLibrary[i].hasBeenRead = e.target.checked;
+            }  
+        }
+    });
+
+    return switchLabel;
 }
