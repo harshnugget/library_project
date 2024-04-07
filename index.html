@@ -13,17 +13,24 @@
         </caption>
         <thead>
             <tr>
-              <th scope="col">Name</th>
+              <th scope="col">Title</th>
               <th scope="col">Author</th>
               <th scope="col">Pages</th>
               <th scope="col">Has been read?</th>
             </tr>
         </thead>
         <tbody>
-
+          <tr>
+            <td><input type="text" id="book-name" placeholder="Title"></td>
+            <td><input type="text" id="book-author" placeholder="Author"></td>
+            <td><input type="number" id="book-pages" placeholder="0"></td>
+            <td><input type="checkbox" id="book-read-status"></td>
+            <td><button id="add-book" type="submit">Add</button></td>
+          </tr>
         </tbody>
+        <tfoot>
+        </tfoot>
     </table>
-
 	<script src="script.js"></script>
 </body>
 </html>
