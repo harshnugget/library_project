@@ -11,6 +11,9 @@ class Book {
 
 // Add button event listener
 document.querySelector("#add-book").addEventListener("click", e => {
+    // Prevent default submit action
+    e.preventDefault()
+
     const title = document.querySelector("#book-title");
     const author = document.querySelector("#book-author");
     const pages = document.querySelector("#book-pages");
@@ -27,8 +30,15 @@ document.querySelector("#add-book").addEventListener("click", e => {
 // Add book to library array and table
 function addBookToLibrary(title, author, numberOfPages, hasBeenRead=false) {
     if (!title || !author) {
-        console.log("Invalid");
+        console.log("A title and author required");
         return;
+    }
+    
+    if (numberOfPages < 0) {
+        numberOfPages = 0;
+    }
+    else if (numberOfPages > 10000) {
+        numberOfPages = "Over 10000";
     }
     
     // Generate id of book
