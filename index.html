@@ -10,14 +10,14 @@
   <form action="/submit" method="post">
     <table>
         <caption>
-          Your Library
+          <h1>Your Library</h1>
         </caption>
         <thead>
             <tr>
-              <th scope="col">Title</th>
-              <th scope="col">Author</th>
-              <th scope="col">Pages</th>
-              <th scope="col">Have you read this book?</th>
+              <th id="title" scope="col">Title</th>
+              <th id="author" scope="col">Author</th>
+              <th id="pages" scope="col">Pages</th>
+              <th is="read-status" scope="col">Have you read this book?</th>
             </tr>
         </thead>
         <tbody>
@@ -26,7 +26,7 @@
             <td><input type="text" id="book-author" placeholder="Author" required></td>
             <td><input type="number" id="book-pages" min="0" max="10000" placeholder="0"></td>
             <td><input type="checkbox" id="book-read-status"></td>
-            <td><button id="add-book" type="submit">Add</button></td>
+            <td><button type="submit" id="add-book">Add</button></td>
           </tr>
         </tbody>
     </table>

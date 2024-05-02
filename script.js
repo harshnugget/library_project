@@ -118,7 +118,7 @@ function generateBookId(book, author) {
 
 // Create a switch element
 function createSwitchElement(state=false) {
-    // Create a switch element
+    // Create a switch label
     var switchLabel = document.createElement("label");
     switchLabel.classtitle = "switch";
 
