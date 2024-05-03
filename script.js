@@ -6,7 +6,7 @@ class Book {
         }
         
         // Page number validation
-        if (!Number.isInteger(numberOfPages)) {
+        if (isNaN(numberOfPages)) {
             throw new Error("Number of pages must be an integer.")
         }
         else if (numberOfPages < 0) {
@@ -45,7 +45,7 @@ class Library {
         if (id in this.books) {
             const book = this.books[id];
             delete this.books[id];
-            console.log(`${book.title} was removed from your library.`);
+            console.log(`${book.title} has been removed from your library.`);
         } else {
             console.log("This book does not exist in your library.");
         }
