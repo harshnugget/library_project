@@ -1,11 +1,66 @@
 let myLibrary = [];
 
 class Book {
-    constructor(title, author, numberOfPages, hasBeenRead) {
+    constructor(title, author, numberOfPages, hasBeenRead=false) {
+        // Require a title and author
+        if (!title || !author) {
+            throw new Error("A book must have both a title and an author.");
+        }
+        
+        // Handle page number limits
+        if (numberOfPages < 0) {
+            numberOfPages = 0;
+        } else if (numberOfPages > 10000) {
+            numberOfPages = 10000;
+        }
+
         this.title = title;
         this.author = author;
         this.numberOfPages = numberOfPages;
         this.hasBeenRead = hasBeenRead;
+    }
+}
+
+class Library {
+    constructor() {
+        this.books = {};
+    }
+
+    addBook(book) {
+        // Generate a unique id for the book before storing it
+        const id = this.generateUniqueId(book.title, book.author);
+
+        // Check if book id already exists in library
+        if (id in this.books) {
+            console.log("This book already exists in your Library.");
+            return;
+        }
+        this.books[id] = book;
+    }
+
+    removeBook(id) {
+        if (id in this.books) {
+            delete this.books[id];
+            console.log("Book removed successfully.");
+        } else {
+            console.log("This book does not exist in the library.");
+        }
+    }
+
+    // Generate a unique data id for each book
+    generateUniqueId(title, author) {
+        // Combine title and author into a single string
+        const string = (title + author).replace(/\s+/g, "").toLowerCase();
+        let id = 0;
+
+        if (string.length === 0) return id;
+
+        for (let i = 0; i < string.length; i++) {
+            let char = string.charCodeAt(i);
+            id = ((id << 5) - id) + char;
+            id |= 0; // Convert id to 32bit integer
+        }
+    return id;
     }
 }
 
