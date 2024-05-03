@@ -1,14 +1,15 @@
-let myLibrary = [];
-
 class Book {
     constructor(title, author, numberOfPages, hasBeenRead=false) {
-        // Require a title and author
+        // Title and author validation
         if (!title || !author) {
             throw new Error("A book must have both a title and an author.");
         }
         
-        // Handle page number limits
-        if (numberOfPages < 0) {
+        // Page number validation
+        if (!Number.isInteger(numberOfPages)) {
+            throw new Error("Number of pages must be an integer.")
+        }
+        else if (numberOfPages < 0) {
             numberOfPages = 0;
         } else if (numberOfPages > 10000) {
             numberOfPages = 10000;
@@ -30,24 +31,27 @@ class Library {
         // Generate a unique id for the book before storing it
         const id = this.generateUniqueId(book.title, book.author);
 
-        // Check if book id already exists in library
         if (id in this.books) {
-            console.log("This book already exists in your Library.");
+            console.log("This book already exists in your library.");
             return;
+        } else {
+            this.books[id] = book;
+            console.log(`${book.title} has been added to your library.`);
+            return id;
         }
-        this.books[id] = book;
     }
 
     removeBook(id) {
         if (id in this.books) {
+            const book = this.books[id];
             delete this.books[id];
-            console.log("Book removed successfully.");
+            console.log(`${book.title} was removed from your library.`);
         } else {
-            console.log("This book does not exist in the library.");
+            console.log("This book does not exist in your library.");
         }
     }
 
-    // Generate a unique data id for each book
+    // Generate a unique id for each book
     generateUniqueId(title, author) {
         // Combine title and author into a single string
         const string = (title + author).replace(/\s+/g, "").toLowerCase();
@@ -64,7 +68,6 @@ class Library {
     }
 }
 
-// Add button event listener
 document.querySelector("#add-book").addEventListener("click", e => {
     // Prevent default submit action
     e.preventDefault()
@@ -74,63 +77,41 @@ document.querySelector("#add-book").addEventListener("click", e => {
     const pages = document.querySelector("#book-pages");
     const hasBeenRead = document.querySelector("#book-read-status");
 
-    addBookToLibrary(title.value, author.value, pages.value, hasBeenRead.checked);
+    const book = new Book(title.value, author.value, pages.value, hasBeenRead.checked);
 
+    // Store id and add book to library
+    const id = (myLib.addBook(book));
+
+    // Create a new row using the id as a data value
+    createNewRow(id);
+
+    // Reset input values
     title.value = "";
     author.value = "";
     pages.value = "";
     hasBeenRead.checked = false;
 });
 
-// Add book to library array and table
-function addBookToLibrary(title, author, numberOfPages, hasBeenRead=false) {
-    if (!title || !author) {
-        console.log("A title and author required");
-        return;
-    }
-    
-    if (numberOfPages < 0) {
-        numberOfPages = 0;
-    }
-    else if (numberOfPages > 10000) {
-        numberOfPages = "Over 10000";
-    }
-    
-    // Generate id of book
-    const id = generateBookId(title, author);
-
-    // Check if book already exists
-    for (let i = 0; i < myLibrary.length; i++) {
-        if (id == myLibrary[i].id) {
-            console.log("This book already exists in your library!");
-            return;
-        }
-    }
-
-    const book = new Book(title, author, numberOfPages, hasBeenRead);
-    book.id = id;
-
-    // Append book to library array
-    myLibrary.push(book);
+function createNewRow(id) {
+    const book = myLib.books[id];
 
     // Create a new row in library table
     const tbodyRef = document.querySelector("table > tbody");
     const newRow = tbodyRef.insertRow(tbodyRef.rows.length - 1);
-    newRow.dataset.id = id;
+    newRow.dataset.id = id; // Data value of row
 
     // Fill new row with book data
     const titleCell = newRow.insertCell();
-    titleCell.textContent = title;
+    titleCell.textContent = book.title;
 
     const authorCell = newRow.insertCell();
-    authorCell.textContent = author;
+    authorCell.textContent = book.author;
 
     const pagesCell = newRow.insertCell();
-    pagesCell.textContent = numberOfPages;
+    pagesCell.textContent = book.numberOfPages;
 
     const hasBeenReadCell = newRow.insertCell();
-    hasBeenReadCell.appendChild(createSwitchElement(hasBeenRead));
-
+    hasBeenReadCell.appendChild(createToggle(book.hasBeenRead));    // Insert a toggle element into the cell
 
     // Add a remove button to each row
     const deleteButtonCell = newRow.insertCell();
@@ -140,64 +121,37 @@ function addBookToLibrary(title, author, numberOfPages, hasBeenRead=false) {
     button.addEventListener("click", removeBookFromLibrary);
 }
 
-// Remove book from library array and table
+// Remove book from library
 function removeBookFromLibrary() {
-    // Retrieve the book id from the dataset of the row the button resides in
+    // Retrieve the id of the row containing the button
+    // This id will be the same id as the book
     const id = this.closest("tr").dataset.id;
 
-    // Remove the row containing the book's id
+    // Remove the row containing the id
     const rowToRemove = document.querySelector(`tr[data-id="${id}"]`);
     rowToRemove.remove();
     
-    // Remove book from library array
-    myLibrary = myLibrary.filter(book => {
-        book.id !== id;
-    });
+    // Remove the book from library
+    delete myLib.removeBook(id);
 }
 
-// Generate a unique data id for each book
-function generateBookId(book, author) {
-    // Combine book and author into a single string
-    const string = (book + author).replace(/\s+/g, "").toLowerCase();
-    let id = 0;
+// Create a toggle for tracking book's read status
+function createToggle(state=false) {
 
-    if (string.length === 0) return id;
-
-    for (let i = 0; i < string.length; i++) {
-        let char = string.charCodeAt(i);
-        id = ((id << 5) - id) + char;
-        id |= 0; // Convert to 32bit integer
-    }
-  return id;
-}
-
-// Create a switch element
-function createSwitchElement(state=false) {
-    // Create a switch label
-    var switchLabel = document.createElement("label");
-    switchLabel.classtitle = "switch";
-
-    // Create an input element for checkbox
     var checkboxInput = document.createElement("input");
     checkboxInput.setAttribute("type", "checkbox");
     checkboxInput.checked = state;
 
-    // Create a span element for slider
-    var sliderSpan = document.createElement("span");
-    sliderSpan.classtitle = "slider round";
-
-    // Append input and span to label
-    switchLabel.appendChild(checkboxInput);
-    switchLabel.appendChild(sliderSpan);
-
-    // Update read status on library object
-    switchLabel.addEventListener("click", e => {
-        for (let i = 0; i < myLibrary.length; i++) {
-            if (e.target.closest("tr").dataset.id == myLibrary[i].id) {
-                myLibrary[i].hasBeenRead = e.target.checked;
-            }  
+    // Update read status on the book object
+    checkboxInput.addEventListener("click", (e) => { 
+        const id = e.target.closest("tr").dataset.id;
+        if (id in myLib.books) {
+            myLib.books[id].hasBeenRead = e.target.checked;
         }
     });
 
-    return switchLabel;
+    return checkboxInput;
 }
+
+// Create a library
+myLib = new Library();
