@@ -2,8 +2,7 @@ let myLibrary = [];
 
 class Book {
     constructor(title, author, numberOfPages, hasBeenRead) {
-        test = test;
-        this.title1 = title;
+        this.title = title;
         this.author = author;
         this.numberOfPages = numberOfPages;
         this.hasBeenRead = hasBeenRead;
